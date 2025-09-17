@@ -16,7 +16,6 @@ if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) {
     supabase = supabaseJs.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
     useSupabase = true;
     document.getElementById('data-mode').textContent = 'Supabase (realtime)';
-    console.log('Supabase enabled');
   } catch (err) {
     console.warn('Supabase init failed, fallback to localStorage', err);
     useSupabase = false;
@@ -28,7 +27,7 @@ if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) {
 /**************************************
  * State & Elements
  **************************************/
-let transaksi = []; // local cache
+let transaksi = []; 
 let isAdmin = false;
 let currentUser = null;
 
@@ -99,7 +98,6 @@ async function saveLocal() {
 async function fetchFromSupabase() {
   const { data, error } = await supabase.from('transactions').select('*').order('tanggal', { ascending: true });
   if (error) { console.error(error); return []; }
-  // normalize numeric
   return data.map(d => ({ id: d.id, tanggal: d.tanggal, deskripsi: d.deskripsi, jumlah: Number(d.jumlah) }));
 }
 
@@ -122,16 +120,8 @@ async function deleteFromSupabase(id) {
 }
 
 function subscribeRealtime() {
-  // subscribe to INSERT/UPDATE/DELETE on transactions
   supabase.channel('public:transactions')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'transactions' }, payload => {
-      // just refetch or apply minimal change
-      loadAndRender();
-    })
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'transactions' }, payload => {
-      loadAndRender();
-    })
-    .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'transactions' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => {
       loadAndRender();
     })
     .subscribe();
@@ -146,24 +136,27 @@ function formatRp(n) {
   return sign + 'Rp' + Number(abs).toLocaleString('id-ID');
 }
 
-async function renderTable() {
+function renderTable() {
   tabelBody.innerHTML = '';
-  // sort desc for table view
   const rows = [...transaksi].sort((a,b)=> new Date(b.tanggal) - new Date(a.tanggal));
-  rows.forEach((tx, idx) => {
+  
+  rows.forEach(tx => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="p-2">${tx.tanggal}</td>
       <td class="p-2">${tx.deskripsi || '-'}</td>
       <td class="p-2">${formatRp(tx.jumlah)}</td>
       <td class="p-2">
-        ${isAdmin ? `<button class="editBtn px-2 py-1 mr-2 text-xs rounded border">Edit</button>
-        <button class="delBtn px-2 py-1 text-xs rounded border text-red-500">Hapus</button>` : '<span class="text-xs text-gray-400">Hanya lihat</span>'}
+        ${isAdmin 
+          ? `<button class="editBtn px-2 py-1 mr-2 text-xs rounded border">Edit</button>
+             <button class="delBtn px-2 py-1 text-xs rounded border text-red-500">Hapus</button>`
+          : `<span class="text-xs text-gray-400 italic">Read only</span>`
+        }
       </td>
     `;
-    // attach data-id for actions
-    tr.querySelectorAll('.editBtn').forEach(b=>{
-      b.addEventListener('click', async ()=>{
+
+    if (isAdmin) {
+      tr.querySelector('.editBtn').addEventListener('click', async () => {
         const newAmt = prompt('Jumlah (positif=masuk, negatif=keluar)', tx.jumlah);
         const newDesc = prompt('Deskripsi', tx.deskripsi);
         const newDate = prompt('Tanggal (YYYY-MM-DD)', tx.tanggal);
@@ -176,9 +169,8 @@ async function renderTable() {
         }
         await loadAndRender();
       });
-    });
-    tr.querySelectorAll('.delBtn').forEach(b=>{
-      b.addEventListener('click', async ()=>{
+
+      tr.querySelector('.delBtn').addEventListener('click', async () => {
         if (!confirm('Yakin hapus transaksi ini?')) return;
         if (useSupabase) {
           await deleteFromSupabase(tx.id);
@@ -188,17 +180,16 @@ async function renderTable() {
         }
         await loadAndRender();
       });
-    });
+    }
+
     tabelBody.appendChild(tr);
   });
 }
 
 function renderSummaryAndChart() {
-  // totals
   const total = transaksi.reduce((acc, t) => acc + t.jumlah, 0);
   totalSaldoEl.textContent = formatRp(total);
 
-  // chart cumulative
   let labels = [];
   let dataSaldo = [];
   let saldo = 0;
@@ -222,6 +213,13 @@ async function loadAndRender() {
   }
   renderSummaryAndChart();
   renderTable();
+
+  // 🔑 sembunyikan form input kalau bukan admin
+  if (!isAdmin) {
+    formSection.classList.add("hidden");
+  } else {
+    formSection.classList.remove("hidden");
+  }
 }
 
 /**************************************
@@ -242,7 +240,6 @@ formTransaksi.addEventListener('submit', async (e)=>{
     if (useSupabase) {
       await addToSupabase(payload);
     } else {
-      // local fallback
       payload.id = 'loc_' + Date.now();
       transaksi.push(payload);
       await saveLocal();
@@ -270,9 +267,9 @@ btnSignup.addEventListener('click', async ()=>{
   const email = authEmail.value.trim();
   const pass = authPass.value.trim();
   if (!email || pass.length < 6) return alert('Email & password (min 6) diperlukan.');
-  const { data, error } = await supabase.auth.signUp({ email, password: pass });
+  const { error } = await supabase.auth.signUp({ email, password: pass });
   if (error) return alert('Signup gagal: ' + error.message);
-  alert('Akun dibuat. Cek email untuk verifikasi jika menggunakan email confirm.');
+  alert('Akun dibuat. Cek email untuk verifikasi jika perlu.');
   authModal.classList.add('hidden');
 });
 
@@ -284,16 +281,13 @@ btnLogin.addEventListener('click', async ()=>{
   const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
   if (error) return alert('Login gagal: ' + error.message);
   currentUser = data.user;
-  isAdmin = true; // NOTE: sementara treat authenticated as admin — untuk production gunakan RLS & role checks
+  isAdmin = (email === "gorid772@gmail.com"); // 🔑 hanya email admin
   authModal.classList.add('hidden');
   authOpenBtn.classList.add('hidden');
   authLogoutBtn.classList.remove('hidden');
   await loadAndRender();
 });
 
-/**************************************
- * Logout
- **************************************/
 authLogoutBtn.addEventListener('click', async ()=>{
   if (useSupabase) await supabase.auth.signOut();
   currentUser = null;
@@ -304,7 +298,7 @@ authLogoutBtn.addEventListener('click', async ()=>{
 });
 
 /**************************************
- * UI controls (nav & theme)
+ * UI controls
  **************************************/
 navDashboard.onclick = () => { dashboardSection.classList.remove("hidden"); formSection.classList.add("hidden"); tabelSection.classList.add("hidden"); };
 navTambah.onclick = () => { dashboardSection.classList.add("hidden"); formSection.classList.remove("hidden"); tabelSection.classList.add("hidden"); };
@@ -317,15 +311,13 @@ toggleModeBtn.onclick = () => document.body.classList.toggle('dark');
  **************************************/
 (async function init(){
   if (useSupabase) {
-    // If supabase active, try to get current session
     const { data } = await supabase.auth.getSession();
     if (data?.session?.user) {
       currentUser = data.session.user;
-      isAdmin = true; // again: for demo only. Use RLS
+      isAdmin = (currentUser.email === "gorid772@gmail.com"); // 🔑 cek admin
       authOpenBtn.classList.add('hidden');
       authLogoutBtn.classList.remove('hidden');
     }
-    // subscribe realtime
     subscribeRealtime();
   } else {
     await loadLocal();
