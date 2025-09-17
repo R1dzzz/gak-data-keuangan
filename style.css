@@ -1,0 +1,172 @@
+/* Neumorphism style base */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #e0e5ec;
+  color: #333;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Dark Mode */
+body.dark {
+  background: #1e1e2e;
+  color: #eee;
+}
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark th,
+body.dark td,
+body.dark label {
+  color: #eee;
+}
+
+/* Card Neumorphism */
+.card {
+  background: #e0e5ec;
+  border-radius: 20px;
+  box-shadow: 9px 9px 16px #a3b1c6,
+              -9px -9px 16px #ffffff;
+  padding: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark .card {
+  background: #1e1e2e;
+  box-shadow: 9px 9px 16px #141414,
+              -9px -9px 16px #2a2a3d;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 24px #a3b1c6,
+              -12px -12px 24px #ffffff;
+}
+body.dark .card:hover {
+  box-shadow: 12px 12px 24px #141414,
+              -12px -12px 24px #2a2a3d;
+}
+
+/* Tombol Sidebar Neumorphism */
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: #e0e5ec;
+  font-weight: 500;
+  text-align: left;
+  box-shadow: 4px 4px 8px #a3b1c6,
+              -4px -4px 8px #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+body.dark .sidebar-btn {
+  background: #1e1e2e;
+  box-shadow: 4px 4px 8px #141414,
+              -4px -4px 8px #2a2a3d;
+}
+.sidebar-btn:hover {
+  transform: translateY(-3px);
+  background: #d1d9e6;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+}
+body.dark .sidebar-btn:hover {
+  background: #2a2a3d;
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.8);
+}
+
+/* Table Neumorphism */
+table {
+  width: 100%;
+  border-spacing: 0 10px;
+}
+table thead {
+  font-weight: bold;
+}
+table tbody tr {
+  background: #e0e5ec;
+  border-radius: 12px;
+  box-shadow: 6px 6px 12px #a3b1c6,
+              -6px -6px 12px #ffffff;
+}
+body.dark table tbody tr {
+  background: #1e1e2e;
+  box-shadow: 6px 6px 12px #141414,
+              -6px -6px 12px #2a2a3d;
+}
+table td {
+  padding: 12px;
+  text-align: center;
+}
+
+/* Button neumorphic */
+.btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 500;
+  background: #e0e5ec;
+  box-shadow: 4px 4px 8px #a3b1c6,
+              -4px -4px 8px #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+body.dark .btn {
+  background: #1e1e2e;
+  color: #eee;
+  box-shadow: 4px 4px 8px #141414,
+              -4px -4px 8px #2a2a3d;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Input Neumorphism */
+input {
+  background: #e0e5ec;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 15px;
+  width: 100%;
+  box-shadow: inset 4px 4px 8px #a3b1c6,
+              inset -4px -4px 8px #ffffff;
+  transition: all 0.2s ease-in-out;
+  color: #333;
+}
+input:focus {
+  outline: none;
+  box-shadow: inset 2px 2px 4px #a3b1c6,
+              inset -2px -2px 4px #ffffff,
+              0 0 6px rgba(124, 58, 237, 0.6);
+}
+body.dark input {
+  background: #1e1e2e;
+  color: #eee;
+  box-shadow: inset 4px 4px 8px #141414,
+              inset -4px -4px 8px #2a2a3d;
+}
+body.dark input:focus {
+  box-shadow: inset 2px 2px 4px #141414,
+              inset -2px -2px 4px #2a2a3d,
+              0 0 6px rgba(124, 58, 237, 0.8);
+}
+
+/* Anggota list style */
+#anggota-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.anggota-item {
+  background: #e0e5ec;
+  border-radius: 12px;
+  padding: 10px 15px;
+  box-shadow: 4px 4px 8px #a3b1c6,
+              -4px -4px 8px #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+body.dark .anggota-item {
+  background: #1e1e2e;
+  box-shadow: 4px 4px 8px #141414,
+              -4px -4px 8px #2a2a3d;
+}
+.anggota-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Keuangan Kelompok — Supabase Realtime</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Supabase (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-500">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 sidebar p-6">
+      <h1 class="text-2xl font-bold mb-6">💰 Keuangan Kelompok</h1>
+      <nav>
+        <button id="nav-dashboard" class="sidebar-btn">📊 Dashboard</button>
+        <button id="nav-tambah" class="sidebar-btn">➕ Tambah Data</button>
+        <button id="nav-tabel" class="sidebar-btn">📑 Tabel Transaksi</button>
+        <button id="toggle-mode" class="sidebar-btn">🌙 / ☀️ Mode</button>
+        <button id="auth-open" class="sidebar-btn bg-indigo-500 text-white font-bold">🔐 Login / Signup</button>
+        <button id="auth-logout" class="sidebar-btn bg-red-500 text-white font-bold hidden">🚪 Logout</button>
+      </nav>
+
+      <div class="mt-6 text-xs text-gray-500">
+        <div>Mode data: <span id="data-mode">localStorage</span></div>
+        <div class="mt-2">Untuk sinkron: hubungkan Supabase URL & KEY di <code>script.js</code></div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 space-y-8">
+      <div class="card">
+        <h2 class="text-3xl font-bold">Total Saldo: <span id="total-saldo">Rp0</span></h2>
+        <div class="text-sm text-gray-500 mt-2">(Real-time bila terhubung Supabase)</div>
+      </div>
+
+      <section id="dashboard-section" class="card">
+        <h3 class="text-xl font-semibold mb-4">📈 Grafik Keuangan</h3>
+        <canvas id="financeChart"></canvas>
+      </section>
+
+      <section id="form-section" class="hidden card">
+        <h3 class="text-xl font-semibold mb-4">➕ Form Input Transaksi</h3>
+        <form id="form-transaksi" class="space-y-4">
+          <input type="date" id="tanggal" required />
+          <input type="number" id="jumlah" placeholder="Jumlah (Rp)" required />
+          <input type="text" id="deskripsi" placeholder="Deskripsi" required />
+          <div class="flex gap-2">
+            <button type="submit" class="btn">Tambah</button>
+            <button id="clear-btn" type="button" class="btn">Reset Form</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="tabel-section" class="hidden card">
+        <h3 class="text-xl font-semibold mb-4">📑 Tabel Transaksi</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Deskripsi</th>
+              <th>Jumlah (Rp)</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-body"></tbody>
+        </table>
+      </section>
+
+      <section id="anggota-section" class="card">
+        <h3 class="text-xl font-semibold mb-4">👥 Anggota Kelompok</h3>
+        <ul id="anggota-list" class="space-y-3">
+          <li class="anggota-item">1. Blitch — Absen 26 — Kelas 11 TJKT 2</li>
+          <li class="anggota-item">2. Rimo — Absen 31 — Kelas 11 TJKT 2</li>
+          <li class="anggota-item">3. Fauzan YP — Absen 27 — Kelas 11 TJKT 2</li>
+          <li class="anggota-item">4. Denis Al — Absen 04 — Kelas 11 TJKT 2</li>
+          <li class="anggota-item">5. Eka A — Absen 17 — Kelas 11 TJKT 2</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow w-11/12 max-w-md">
+      <h4 class="font-semibold mb-3">Login / Signup</h4>
+      <div id="authArea" class="space-y-3">
+        <input id="authEmail" type="email" placeholder="Email" />
+        <input id="authPass" type="password" placeholder="Password (min 6)" />
+        <div class="flex gap-2">
+          <button id="btnSignup" class="btn">Signup</button>
+          <button id="btnLogin" class="btn">Login</button>
+          <button id="btnCloseAuth" class="btn">Batal</button>
+        </div>
+        <div class="text-xs text-gray-500">Rekomendasi: buat 1 akun admin (guru/ketua) lalu set di Supabase RLS.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
