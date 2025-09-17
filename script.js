@@ -2,8 +2,8 @@
  * CONFIG - isi ini kalau mau pakai Supabase
  **************************************/
 const CONFIG = {
-  SUPABASE_URL: '', // contoh: https://xyzcompany.supabase.co
-  SUPABASE_ANON_KEY: '' // jangan pake service_role; pakai anon/public key
+  SUPABASE_URL: 'https://cgypawnxyavaiwsxtlkd.supabase.co', // contoh: https://xyzcompany.supabase.co
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNneXBhd254eWF2YWl3c3h0bGtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNzExOTYsImV4cCI6MjA3MzY0NzE5Nn0.0x6FJCe-_TnbbdQz5Aj8zWyMwMMPdDT332vhr1Ldg2w' // jangan pake service_role; pakai anon/public key
 };
 
 /**************************************
