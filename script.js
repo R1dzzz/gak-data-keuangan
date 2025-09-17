@@ -12,7 +12,7 @@ let useSupabase = false;
 let supabase = null;
 if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) {
   try {
-    supabase = supabaseJs.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
     useSupabase = true;
     document.getElementById('data-mode').textContent = 'Supabase (realtime)';
   } catch (err) {
